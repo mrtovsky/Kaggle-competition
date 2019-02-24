@@ -15,7 +15,7 @@ The original solution was made using the Concorde TSP Solver together with local
 optimization of the areas with the largest road length with the help of the
 implemented in the attached repository genetic algorithm which provides an
 improvement due to the inclusion of prime numbers. Detailed description of the
-task can be foind at the 
+task can be found at the 
 [Kaggle webside](https://www.kaggle.com/c/traveling-santa-2018-prime-paths).
 
 ***
