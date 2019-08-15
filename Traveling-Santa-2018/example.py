@@ -9,7 +9,12 @@ def main():
     random.seed(SEED)
     np.random.seed(SEED)
 
-    genetic_algorithm.start_evolution(generations=100, verbose=1)
+    genetic_algorithm.start_evolution(
+        generations=100,
+        mutation_proba=.1,
+        mutation_dimming_factor=.9,
+        verbose=1
+    )
 
 
 if __name__ == '__main__':

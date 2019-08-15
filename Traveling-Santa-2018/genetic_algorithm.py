@@ -1,11 +1,30 @@
 import numpy as np
 
+from inspect import currentframe, getargvalues
+
 from chromosome import RudolphRoute
 
 
+class RudolphEvolution(object):
+    def __init__(
+        self, current_best_length=None, precursors=200, chosen_size=20,
+        generations=500, mutation_proba=.01, mutation_dimming_factor=1,
+        verbose=0
+    ):
+        icf = currentframe()
+        args, _, _, values = getargvalues(icf)
+        values.pop('self')
+
+        for param, value in values.items():
+            setattr(self, param, value)
+
+    def __call__(self):
+        pass
+
+
 def start_evolution(
-    current_best_length=None, precursors=200,
-    chosen_size=20, generations=500, verbose=1
+    current_best_length=None, precursors=200, chosen_size=20, generations=500,
+    mutation_proba=.01, mutation_dimming_factor=1, verbose=1
 ):
     """Initializes the genetic algorithm that solves the Santa-TSP problem.
 
@@ -36,9 +55,11 @@ def start_evolution(
         # Assigning value neutral for further calculations.
         current_best_length = 1
 
-    precursors = [RudolphRoute() for _ in range(precursors)]
+    population = [
+        RudolphRoute(mutation_proba=mutation_proba)
+        for _ in range(precursors)
+    ]
 
-    population = precursors
     for i in range(generations):
         chosen, best = _select_descendants(
             population, current_best_length, chosen_size
@@ -46,6 +67,18 @@ def start_evolution(
         if i == 0:
             alpha_chrom = best
             current_best_length = alpha_chrom.length()
+            if verbose:
+                print(
+                    "Benchmark route's length taken from the precursors' "
+                    "population: {0:.2f}. It passes through the following "
+                    "cities: {1}. Mutation probability at the beginning was: "
+                    "{2:.2f}%."
+                    .format(
+                        current_best_length,
+                        alpha_chrom.route,
+                        alpha_chrom.mutation_proba * 100
+                    )
+                )
         elif best.length() < alpha_chrom.length():
             alpha_chrom = best
             current_best_length = alpha_chrom.length()
@@ -53,9 +86,18 @@ def start_evolution(
                 print(
                     "After {0} generations the best route's length is: {1:.2f}"
                     " and it passes through the following cities: {2}."
-                    .format(i, alpha_chrom.length(), alpha_chrom.route)
+                    " Probability of mutation is currently at: {3:.2f}%."
+                    .format(
+                        i + 1,
+                        current_best_length,
+                        alpha_chrom.route,
+                        alpha_chrom.mutation_proba * 100
+                    )
                 )
-        population = _generate_population(chosen)
+        population = [
+            _dim_mutation(rudolph, mutation_dimming_factor)
+            for rudolph in _generate_population(chosen)
+        ]
 
     _, final_leader = _pick_best(population, current_best_length)
 
@@ -88,6 +130,9 @@ def _select_descendants(population, current_best_length, chosen_size=.05):
     -------
     chosen: list
         Collection of the chosen chromosomes.
+
+    best: RudolphRoute
+        The fittest object from the population.
 
     """
     population_fitness, best = _pick_best(population, current_best_length)
@@ -142,3 +187,9 @@ def _pick_best(population, current_best_length):
     best = population[best_idx]
 
     return population_fitness, best
+
+
+def _dim_mutation(rudolph_object, mutation_dimming_factor):
+    """Dims mutation_proba attribute of the RudolphRoute object."""
+    rudolph_object.mutation_proba *= mutation_dimming_factor
+    return rudolph_object

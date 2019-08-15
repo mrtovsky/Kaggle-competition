@@ -106,13 +106,14 @@ class RudolphRoute(object):
         measured_routes = [
             (route, self.length(route)) for route in mutated_routes
         ]
-        best_route = min(measured_routes, key=lambda pair: pair[1])
+        best_route = min(measured_routes, key=lambda pair: pair[1])[0]
 
-        return type(self)(
+        new_obj = type(self)(
             cities=self.cities,
-            route=best_route[0],
+            route=best_route,
             mutation_proba=self.mutation_proba
         )
+        return new_obj
 
     def __radd__(self, obj):
         return self + obj

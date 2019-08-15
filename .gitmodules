@@ -1,0 +1,3 @@
+[submodule "IEEE-CIS-Fraud-Detection"]
+	path = IEEE-CIS-Fraud-Detection
+	url = https://github.com/mrtovsky/IEEE-CIS-Fraud-Detection
