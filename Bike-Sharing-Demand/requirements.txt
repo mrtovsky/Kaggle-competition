@@ -1,7 +1,7 @@
 bayesian-optimization==1.0.0
 Boruta==0.1.5
 matplotlib==3.0.2
-numpy==1.15.4
+numpy==1.22.0
 pandas==0.23.4
 paralytics==0.1
 scikit-learn==0.20.1
